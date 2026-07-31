@@ -1,0 +1,45 @@
+// src/components/seguimiento/TimelineSeguimiento.tsx
+import { Check, Clock, AlertCircle } from 'lucide-react';
+import { EstadoSolicitudType } from '@/lib/types';
+
+const steps: { label: EstadoSolicitudType; date?: string; active: boolean; done: boolean }[] = [
+  { label: 'Enviada', date: '25 Mar', active: false, done: true },
+  { label: 'Cotizada', date: '28 Mar', active: false, done: true },
+  { label: 'Adjudicada', date: '30 Mar', active: false, done: true },
+  { label: 'En Ejecución', date: 'Hoy, 10:30', active: true, done: false },
+  { label: 'Inspección', active: false, done: false },
+  { label: 'Finalizada', active: false, done: false },
+  { label: 'Recepcionada', active: false, done: false },
+];
+
+export function TimelineSeguimiento() {
+  return (
+    <div className="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+      <h3 className="text-sm font-semibold text-slate-800 dark:text-white mb-6">Estado del Avance y Recepción</h3>
+      
+      <div className="flex items-center justify-between relative">
+        <div className="absolute left-0 top-3.5 w-full h-0.5 bg-slate-200 dark:bg-slate-700 -z-0" />
+        
+        {steps.map((step, idx) => (
+          <div key={idx} className="flex flex-col items-center relative z-10">
+            <div 
+              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-colors ${
+                step.done 
+                  ? 'bg-green-600 text-white' 
+                  : step.active 
+                  ? 'bg-hospital-500 text-white ring-4 ring-blue-100 dark:ring-blue-900' 
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
+              }`}
+            >
+              {step.done ? <Check className="w-4 h-4" /> : idx + 1}
+            </div>
+            <p className={`text-xs font-medium mt-2 ${step.active ? 'text-hospital-500 font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
+              {step.label}
+            </p>
+            {step.date && <p className="text-[10px] text-slate-400">{step.date}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}  
