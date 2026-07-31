@@ -1,0 +1,85 @@
+// src/app/solicitudes/[id]/orden-trabajo/page.tsx
+'use client';
+
+import { Download, Printer, ShieldAlert } from 'lucide-react';
+
+export default function OrdenTrabajoPage() {
+  const printDocument = () => {
+    window.print();
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex justify-between items-center print:hidden">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Orden de Trabajo Adjudicada</h1>
+          <p className="text-sm text-slate-500">Documento contractual validado para ejecución interna.</p>
+        </div>
+        <button 
+          onClick={printDocument}
+          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+        >
+          <Printer className="w-4 h-4" /> Imprimir / PDF
+        </button>
+      </div>
+
+      {/* Estructura PDF / Orden Hospitalaria Formal */}
+      <div className="bg-white text-slate-900 p-8 rounded-xl border border-slate-300 shadow-sm space-y-6">
+        <div className="flex justify-between items-start border-b border-slate-200 pb-6">
+          <div>
+            <h2 className="text-xl font-black tracking-tight uppercase">Hospital Universitario — Servicios Generales</h2>
+            <p className="text-xs text-slate-500">Av. Institucional #1000, Santiago — Unidad de Mantención</p>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-bold text-slate-400 block uppercase">Orden de Trabajo N°</span>
+            <span className="text-2xl font-black text-hospital-500">OT-2026-0894</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 text-sm">
+          <div className="p-4 bg-slate-50 rounded-lg">
+            <p className="text-xs font-bold text-slate-400 uppercase">Empresa Adjudicada</p>
+            <p className="font-bold text-base text-slate-900 mt-1">ClimaMed Ltda.</p>
+            <p className="text-xs text-slate-600">RUT: 76.432.120-K</p>
+            <p className="text-xs text-slate-600">Contacto: Carlos Mendoza (+56 9 8765 4321)</p>
+          </div>
+
+          <div className="p-4 bg-slate-50 rounded-lg">
+            <p className="text-xs font-bold text-slate-400 uppercase">Detalles del Contrato</p>
+            <p className="font-bold text-base text-slate-900 mt-1">Monto: $3.850.000 (IVA Inc.)</p>
+            <p className="text-xs text-slate-600">Plazo ejecución: 5 días corridos</p>
+            <p className="text-xs text-slate-600">Garantía comprometida: 12 meses</p>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Especificación del Trabajo y Ubicación</h4>
+          <p className="font-bold text-sm">Mantenimiento Chiller Central - Torre B (Piso 3, UCI)</p>
+          <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+            Revisión integral, cambio de rodamientos y carga controlada de gas refrigerante R410A. Todo trabajo que involucre corte
+            eléctrico deberá ser coordinado con al menos 24 horas de anticipación con la Jefatura de la Unidad de Cuidados Intensivos.
+          </p>
+        </div>
+
+        <div className="p-4 border-l-4 border-amber-500 bg-amber-50 text-amber-900 text-xs space-y-1">
+          <p className="font-bold flex items-center gap-1">
+            <ShieldAlert className="w-4 h-4" /> Normativa Obligatoria en Recintos Clínicos:
+          </p>
+          <p>• Uso estricto de EPP y credencial visible de la empresa contratista.</p>
+          <p>• Prohibición de ruidos excesivos en horario de descanso de pacientes (14:00 - 16:00 hrs).</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-12 pt-12 border-t border-slate-200 text-center">
+          <div>
+            <div className="w-48 mx-auto border-b border-slate-400 pb-1 font-bold text-xs">Carlos Mendoza</div>
+            <p className="text-[11px] text-slate-400 mt-1">Firma Representante Legal Proveedor</p>
+          </div>
+          <div>
+            <div className="w-48 mx-auto border-b border-slate-400 pb-1 font-bold text-xs">Dra. María Soto</div>
+            <p className="text-[11px] text-slate-400 mt-1">Firma Jefa de Servicios Generales</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
