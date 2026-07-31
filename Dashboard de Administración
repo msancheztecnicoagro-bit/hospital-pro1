@@ -1,0 +1,96 @@
+// src/app/page.tsx
+import { 
+  ClipboardList, Clock, PlayCircle, CheckCircle2, 
+  TrendingUp, DollarSign 
+} from 'lucide-react';
+
+export default function DashboardPage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Panel de Gestión Hospitalaria</h1>
+        <p className="text-sm text-slate-500">Supervisión en tiempo real de requerimientos y mantenciones.</p>
+      </div>
+
+      {/* Tarjetas de Indicadores */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <StatCard title="Solicitudes abiertas" value="14" icon={ClipboardList} color="bg-blue-50 text-blue-600" />
+        <StatCard title="Cotiz. pendientes" value="8" icon={Clock} color="bg-amber-50 text-amber-600" />
+        <StatCard title="En ejecución" value="6" icon={PlayCircle} color="bg-indigo-50 text-indigo-600" />
+        <StatCard title="Finalizados (Mes)" value="29" icon={CheckCircle2} color="bg-green-50 text-green-600" />
+        <StatCard title="T. de Respuesta" value="4.2 hrs" icon={TrendingUp} color="bg-purple-50 text-purple-600" />
+        <StatCard title="Adjudicado (Mes)" value="$42.5M" icon={DollarSign} color="bg-emerald-50 text-emerald-600" />
+      </div>
+
+      {/* Vista de Gráficos e Indicadores */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Gasto Mensual por Especialidad</h3>
+          <div className="space-y-3">
+            <BarItem label="Climatización y Calderas" percentage={65} amount="$18.2M" />
+            <BarItem label="Equipos Médicos y Gases" percentage={45} amount="$12.4M" />
+            <BarItem label="Redes Sanitarias y Gasfitería" percentage={30} amount="$7.1M" />
+            <BarItem label="Electricidad e Iluminación" percentage={20} amount="$4.8M" />
+          </div>
+        </div>
+
+        <div className="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h3 className="font-semibold text-slate-800 dark:text-slate-100 mb-4">Ranking de Proveedores (Calificación Media)</h3>
+          <div className="divide-y divide-slate-100 dark:divide-slate-700">
+            <RankingRow position={1} name="ClimaMed Ltda." category="Climatización" score={4.9} />
+            <RankingRow position={2} name="BioIngeniería Sur S.A." category="Equipos Médicos" score={4.8} />
+            <RankingRow position={3} name="Electricidad Hospitalaria" category="Electricidad" score={4.7} />
+            <RankingRow position={4} name="Sanitaria Central" category="Gasfitería" score={4.5} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ title, value, icon: Icon, color }: { title: string; value: string; icon: any; color: string }) {
+  return (
+    <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+      <div className={`p-3 rounded-lg ${color}`}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <div>
+        <p className="text-xs text-slate-500 font-medium">{title}</p>
+        <p className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function BarItem({ label, percentage, amount }: { label: string; percentage: number; amount: string }) {
+  return (
+    <div>
+      <div className="flex justify-between text-xs font-medium mb-1">
+        <span className="text-slate-700 dark:text-slate-300">{label}</span>
+        <span className="text-slate-900 dark:text-white font-bold">{amount}</span>
+      </div>
+      <div className="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+        <div className="bg-hospital-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function RankingRow({ position, name, category, score }: { position: number; name: string; category: string; score: number }) {
+  return (
+    <div className="py-3 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <span className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center justify-center">
+          #{position}
+        </span>
+        <div>
+          <p className="text-sm font-medium text-slate-900 dark:text-white">{name}</p>
+          <p className="text-xs text-slate-500">{category}</p>
+        </div>
+      </div>
+      <span className="text-xs font-bold bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300 px-2 py-1 rounded">
+        ★ {score}
+      </span>
+    </div>
+  );
+}
