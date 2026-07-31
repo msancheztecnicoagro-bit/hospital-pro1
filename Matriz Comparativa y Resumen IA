@@ -1,0 +1,119 @@
+// src/app/solicitudes/[id]/page.tsx
+'use client';
+
+import { useState } from 'react';
+import { Sparkles, CheckCircle2, Trophy, Clock, AlertCircle } from 'lucide-react';
+import { Cotizacion } from '@/lib/types';
+
+const mockCotizaciones: Cotizacion[] = [
+  {
+    id: 'c1',
+    solicitud_id: 'sample-id',
+    proveedor_id: 'p1',
+    proveedor: { id: 'p1', nombre: 'ClimaMed Ltda.', razon_social: '', rut: '', especialidades: [], contacto_principal: '', telefono: '', correo: '', evaluacion: 4.9, estado: 'Activo' },
+    monto: 3850000,
+    iva_incluido: true,
+    plazo_dias: 5,
+    garantia_meses: 12,
+    observaciones: 'Repuestos originales garantizados',
+    estado: 'Enviada',
+    fecha_envio: '2026-03-28'
+  },
+  {
+    id: 'c2',
+    solicitud_id: 'sample-id',
+    proveedor_id: 'p2',
+    proveedor: { id: 'p2', nombre: 'TermoClima S.A.', razon_social: '', rut: '', especialidades: [], contacto_principal: '', telefono: '', correo: '', evaluacion: 4.3, estado: 'Activo' },
+    monto: 3450000,
+    iva_incluido: true,
+    plazo_dias: 8,
+    garantia_meses: 6,
+    observaciones: 'Sujeto a stock de rodamientos importados',
+    estado: 'Enviada',
+    fecha_envio: '2026-03-29'
+  }
+];
+
+export default function ComparativaPage() {
+  const [iaResult, setIaResult] = useState<string | null>(
+    "La propuesta de TermoClima S.A. es la más económica ($3.45M), pero ClimaMed Ltda. presenta una evaluación histórica notablemente superior (4.9★), menor tiempo de ejecución (5 días) y el doble de meses de garantía (12m). Se recomienda ClimaMed al tratarse de un servicio en unidad crítica (UCI)."
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <span className="text-xs bg-red-100 text-red-800 font-bold px-2.5 py-0.5 rounded-full uppercase">Prioridad Crítica</span>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-2">Mantenimiento Chiller Torre B - Piso 3</h1>
+          <p className="text-sm text-slate-500">Unidad de Cuidados Intensivos (UCI) — Límite de cotización: 30 de Marzo, 2026</p>
+        </div>
+      </div>
+
+      {/* Tarjeta de Resumen IA Integrada */}
+      {iaResult && (
+        <div className="p-4 bg-gradient-to-r from-blue-900/10 via-indigo-900/10 to-purple-900/10 border border-hospital-500/30 rounded-xl flex items-start gap-3">
+          <div className="p-2 bg-hospital-500 text-white rounded-lg">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-hospital-500 uppercase tracking-wide">Análisis Asistido por IA HospitalPro</p>
+            <p className="text-sm text-slate-800 dark:text-slate-200 mt-1 leading-relaxed">{iaResult}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Matriz Comparativa de Propuestas */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+          <h3 className="font-semibold text-slate-800 dark:text-white">Matriz Comparativa de Cotizaciones Recibidas</h3>
+          <span className="text-xs text-slate-500">2 proveedores respondieron</span>
+        </div>
+
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 font-medium">
+            <tr>
+              <th className="p-4">Empresa / Evaluación</th>
+              <th className="p-4">Monto Cotizado (CLP)</th>
+              <th className="p-4">Plazo Ejecución</th>
+              <th className="p-4">Garantía</th>
+              <th className="p-4">Observaciones del Proveedor</th>
+              <th className="p-4 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+            {mockCotizaciones.map((cot) => {
+              const isBestScore = cot.proveedor?.evaluacion === 4.9;
+              const isBestPrice = cot.monto === 3450000;
+
+              return (
+                <tr key={cot.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                  <td className="p-4">
+                    <p className="font-bold text-slate-900 dark:text-white">{cot.proveedor?.nombre}</p>
+                    <p className="text-xs text-amber-600 font-semibold mt-0.5">★ {cot.proveedor?.evaluacion} promedio</p>
+                  </td>
+                  <td className="p-4">
+                    <span className={`font-bold text-base ${isBestPrice ? 'text-green-600 dark:text-green-400' : 'text-slate-900 dark:text-white'}`}>
+                      ${cot.monto.toLocaleString('es-CL')}
+                    </span>
+                    {isBestPrice && <span className="block text-[10px] text-green-600 font-bold">MENOR PRECIO</span>}
+                  </td>
+                  <td className="p-4">
+                    <span className="font-medium text-slate-800 dark:text-slate-200">{cot.plazo_dias} días corridos</span>
+                    {isBestScore && <span className="block text-[10px] text-hospital-500 font-bold">MENOR PLAZO</span>}
+                  </td>
+                  <td className="p-4">{cot.garantia_meses} meses</td>
+                  <td className="p-4 text-xs text-slate-500 max-w-xs">{cot.observaciones}</td>
+                  <td className="p-4 text-center">
+                    <button className="bg-hospital-500 hover:bg-hospital-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
+                      Adjudicar Trabajo
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
