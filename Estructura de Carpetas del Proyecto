@@ -1,0 +1,36 @@
+rc/
+├── app/
+│   ├── layout.tsx                # Layout principal (Sidebar + Navbar + ThemeProvider)
+│   ├── page.tsx                  # Dashboard Principal (Admin)
+│   ├── nueva-solicitud/
+│   │   └── page.tsx              # Formulario y Selección de Proveedores
+│   ├── solicitudes/
+│   │   └── [id]/
+│   │       ├── page.tsx          # Detalle y Matriz Comparativa con IA
+│   │       └── orden-trabajo/
+│   │           └── page.tsx      # Generador visual de Orden de Trabajo (PDF-ready)
+│   ├── proveedores/
+│   │   └── page.tsx              # CRUD de Proveedores y Fichas por Especialidad
+│   ├── proveedor-portal/
+│   │   └── page.tsx              # Portal y Gestión de Avances (Proveedor)
+│   └── reportes/
+│       └── page.tsx              # Indicadores y Métricas Hospitalarias
+├── components/
+│   ├── layout/
+│   │   ├── Sidebar.tsx
+│   │   └── Navbar.tsx
+│   ├── dashboard/
+│   │   ├── StatCard.tsx
+│   │   └── Charts.tsx
+│   ├── solicitudes/
+│   │   ├── SolicitudForm.tsx
+│   │   ├── ComparadorMatriz.tsx
+│   │   └── IAAnalysisCard.tsx
+│   ├── seguimiento/
+│   │   └── TimelineSeguimiento.tsx
+│   └── ui/                       # Componentes shadcn/ui (Card, Button, Dialog, etc.)
+├── lib/
+│   ├── supabase.ts               # Cliente Supabase typed
+│   └── types.ts                  # Interfaces TypeScript globales
+└── styles/
+    └── globals.css               # Temas de Tailwind (Azul Hospital, Alertas, etc.)
