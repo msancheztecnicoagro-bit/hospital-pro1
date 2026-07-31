@@ -1,0 +1,127 @@
+-- Habilitar extensión UUID
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. TABLA: PROVEEDORES
+CREATE TABLE proveedores (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  nombre VARCHAR(150) NOT NULL,
+  razon_social VARCHAR(200) NOT NULL,
+  rut VARCHAR(15) UNIQUE NOT NULL,
+  especialidades TEXT[] NOT NULL,
+  contacto_principal VARCHAR(100) NOT NULL,
+  cargo VARCHAR(100),
+  telefono VARCHAR(20),
+  whatsapp VARCHAR(20),
+  correo VARCHAR(100) UNIQUE NOT NULL,
+  direccion TEXT,
+  ciudad VARCHAR(100),
+  region VARCHAR(100),
+  evaluacion NUMERIC(3, 2) DEFAULT 0.00,
+  estado VARCHAR(20) DEFAULT 'Activo' CHECK (estado IN ('Activo', 'Inactivo')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. TABLA: SOLICITUDES
+CREATE TABLE solicitudes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  titulo VARCHAR(200) NOT NULL,
+  descripcion TEXT NOT NULL,
+  categoria VARCHAR(50) NOT NULL,
+  prioridad VARCHAR(20) NOT NULL CHECK (prioridad IN ('Crítica', 'Alta', 'Media', 'Baja')),
+  ubicacion TEXT NOT NULL,
+  piso VARCHAR(20),
+  servicio_hospitalario VARCHAR(100),
+  fecha_requerida DATE NOT NULL,
+  fecha_limite TIMESTAMPTZ NOT NULL,
+  presupuesto_tipo VARCHAR(20) CHECK (presupuesto_tipo IN ('Estimado', 'Abierto', 'Reservado')),
+  presupuesto_monto NUMERIC(12, 2),
+  estado VARCHAR(30) DEFAULT 'Enviada' CHECK (estado IN (
+    'Enviada', 'Cotizada', 'Adjudicada', 'En Ejecución', 
+    'Esperando Materiales', 'Inspección', 'Finalizada', 'Recepcionada'
+  )),
+  fecha_creacion TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. TABLA RELACIONAL: SOLICITUD_PROVEEDORES
+CREATE TABLE solicitud_proveedores (
+  solicitud_id UUID REFERENCES solicitudes(id) ON DELETE CASCADE,
+  proveedor_id UUID REFERENCES proveedores(id) ON DELETE CASCADE,
+  estado_envio VARCHAR(30) DEFAULT 'Pendiente' CHECK (estado_envio IN ('Pendiente', 'Enviado', 'Visto', 'Cotizado')),
+  fecha_envio TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (solicitud_id, proveedor_id)
+);
+
+-- 4. TABLA: COTIZACIONES
+CREATE TABLE cotizaciones (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  solicitud_id UUID REFERENCES solicitudes(id) ON DELETE CASCADE,
+  proveedor_id UUID REFERENCES proveedores(id) ON DELETE CASCADE,
+  monto NUMERIC(12, 2) NOT NULL,
+  iva_incluido BOOLEAN DEFAULT TRUE,
+  plazo_dias INT NOT NULL,
+  garantia_meses INT NOT NULL,
+  fecha_inicio_propuesta DATE,
+  observaciones TEXT,
+  archivo_pdf_url TEXT,
+  gantt_url TEXT,
+  estado VARCHAR(20) DEFAULT 'Enviada' CHECK (estado IN ('Borrador', 'Enviada', 'Adjudicada', 'Rechazada')),
+  fecha_envio TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. TABLA: ADJUDICACIONES
+CREATE TABLE adjudicaciones (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  solicitud_id UUID UNIQUE REFERENCES solicitudes(id) ON DELETE CASCADE,
+  proveedor_id UUID REFERENCES proveedores(id) ON DELETE CASCADE,
+  numero_ot VARCHAR(20) UNIQUE NOT NULL,
+  monto NUMERIC(12, 2) NOT NULL,
+  fecha_inicio DATE NOT NULL,
+  fecha_termino DATE NOT NULL,
+  observaciones TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6. TABLA: AVANCES
+CREATE TABLE avances (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  adjudicacion_id UUID REFERENCES adjudicaciones(id) ON DELETE CASCADE,
+  porcentaje INT CHECK (porcentaje BETWEEN 0 AND 100),
+  comentario TEXT NOT NULL,
+  imagenes TEXT[],
+  fecha_registro TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. TABLA: EVALUACIONES
+CREATE TABLE evaluaciones (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  proveedor_id UUID REFERENCES proveedores(id) ON DELETE CASCADE,
+  solicitud_id UUID UNIQUE REFERENCES solicitudes(id) ON DELETE CASCADE,
+  calidad INT CHECK (calidad BETWEEN 1 AND 5),
+  cumplimiento_plazo INT CHECK (cumplimiento_plazo BETWEEN 1 AND 5),
+  comunicacion INT CHECK (comunicacion BETWEEN 1 AND 5),
+  orden_seguridad INT CHECK (orden_seguridad BETWEEN 1 AND 5),
+  documentacion INT CHECK (documentacion BETWEEN 1 AND 5),
+  promedio NUMERIC(3, 2) GENERATED ALWAYS AS (
+    (calidad + cumplimiento_plazo + comunicacion + orden_seguridad + documentacion) / 5.0
+  ) STORED,
+  fecha_evaluacion TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- DISPARADOR: Actualizar calificación media del proveedor
+CREATE OR REPLACE FUNCTION actualizar_evaluacion_proveedor()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE proveedores
+  SET evaluacion = (
+    SELECT ROUND(AVG(promedio)::numeric, 2)
+    FROM evaluaciones
+    WHERE proveedor_id = NEW.proveedor_id
+  )
+  WHERE id = NEW.proveedor_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_actualizar_evaluacion
+AFTER INSERT OR UPDATE ON evaluaciones
+FOR EACH ROW EXECUTE FUNCTION actualizar_evaluacion_proveedor();
