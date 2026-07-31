@@ -1,0 +1,60 @@
+// src/lib/types.ts
+export type PrioridadType = 'Crítica' | 'Alta' | 'Media' | 'Baja';
+export type EstadoSolicitudType = 
+  | 'Enviada' 
+  | 'Cotizada' 
+  | 'Adjudicada' 
+  | 'En Ejecución' 
+  | 'Esperando Materiales' 
+  | 'Inspección' 
+  | 'Finalizada' 
+  | 'Recepcionada';
+
+export interface Proveedor {
+  id: string;
+  nombre: string;
+  razon_social: string;
+  rut: string;
+  especialidades: string[];
+  contacto_principal: string;
+  cargo?: string;
+  telefono: string;
+  whatsapp?: string;
+  correo: string;
+  direccion?: string;
+  ciudad?: string;
+  evaluacion: number;
+  estado: 'Activo' | 'Inactivo';
+}
+
+export interface Cotizacion {
+  id: string;
+  solicitud_id: string;
+  proveedor_id: string;
+  proveedor?: Proveedor;
+  monto: number;
+  iva_incluido: boolean;
+  plazo_dias: number;
+  garantia_meses: number;
+  observaciones: string;
+  estado: 'Borrador' | 'Enviada' | 'Adjudicada' | 'Rechazada';
+  fecha_envio: string;
+}
+
+export interface Solicitud {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  categoria: string;
+  prioridad: PrioridadType;
+  ubicacion: string;
+  piso: string;
+  servicio_hospitalario: string;
+  fecha_requerida: string;
+  fecha_limite: string;
+  presupuesto_tipo: 'Estimado' | 'Abierto' | 'Reservado';
+  presupuesto_monto?: number;
+  estado: EstadoSolicitudType;
+  fecha_creacion: string;
+  cotizaciones?: Cotizacion[];
+}
