@@ -1,0 +1,31 @@
+// src/app/reportes/page.tsx
+import { BarChart3, Download, FileSpreadsheet } from 'lucide-react';
+
+export default function ReportesPage() {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Reportes e Indicadores Hospitalarios</h1>
+          <p className="text-sm text-slate-500">Métricas de gasto, cumplimiento en plazos y desempeño de empresas.</p>
+        </div>
+        <div className="flex gap-2">
+          <button className="bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            <FileSpreadsheet className="w-4 h-4 text-green-600" /> Exportar Excel
+          </button>
+          <button className="bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            <Download className="w-4 h-4 text-red-600" /> Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <div className="p-8 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-center space-y-3">
+        <BarChart3 className="w-12 h-12 text-hospital-500 mx-auto opacity-80" />
+        <h3 className="font-bold text-lg text-slate-800 dark:text-white">Panel Analítico Exportable</h3>
+        <p className="text-xs text-slate-500 max-w-md mx-auto">
+          Los datos se encuentran listos para consumirse mediante vistas consolidadas en Supabase para generación automática de balances mensuales por servicio clínico.
+        </p>
+      </div>
+    </div>
+  );
+}
